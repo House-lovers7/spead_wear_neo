@@ -30,6 +30,7 @@ export function CameraCapture({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const disposedRef = useRef(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [state, setState] = useState<CameraState>("starting");
   const [flash, setFlash] = useState(false);
@@ -46,6 +47,11 @@ export function CameraCapture({
         },
         audio: false,
       });
+      // getUserMedia の解決前にアンマウントされた場合、ここで止めないとカメラが掴まれ続ける
+      if (disposedRef.current) {
+        for (const track of stream.getTracks()) track.stop();
+        return;
+      }
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -53,13 +59,15 @@ export function CameraCapture({
       }
       setState("live");
     } catch {
-      setState("unavailable");
+      if (!disposedRef.current) setState("unavailable");
     }
   }, []);
 
   useEffect(() => {
+    disposedRef.current = false;
     void startCamera();
     return () => {
+      disposedRef.current = true;
       for (const track of streamRef.current?.getTracks() ?? []) track.stop();
       streamRef.current = null;
     };

@@ -65,8 +65,8 @@ describe("matchRequestSchema", () => {
   });
 
   it("クローゼットが空だと拒否する (照合はクライアント側でスキップする契約)", () => {
-    expect(
-      matchRequestSchema.safeParse({ analysis: MOCK_SNAP_ANALYSIS, closet: [] }).success,
-    ).toBe(false);
+    expect(matchRequestSchema.safeParse({ analysis: MOCK_SNAP_ANALYSIS, closet: [] }).success).toBe(
+      false,
+    );
   });
 });

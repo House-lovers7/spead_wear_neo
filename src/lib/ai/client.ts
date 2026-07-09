@@ -12,10 +12,12 @@ export async function streamJsonObject(
   body: unknown,
   onPartial?: (partial: unknown) => void,
 ): Promise<unknown> {
+  // サーバの maxDuration (最大120s) + 余裕。応答が止まった場合に無限待ちさせない
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(150_000),
   });
   if (!res.ok) {
     throw new Error(`AI API エラー (${res.status})`);
