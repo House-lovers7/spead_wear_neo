@@ -46,6 +46,17 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 `getUserMedia` は HTTPS 必須のため、実機カメラは Vercel preview 等の HTTPS 環境で確認する。
 ローカル開発は Mac のウェブカメラ、またはカメラ不可時のファイル選択フォールバックで代替できる。
 
+## ドキュメント
+
+| 文書 | 内容 |
+|---|---|
+| [docs/01_concept.md](docs/01_concept.md) | コンセプト・課題・コアUX原則・スコープ外 |
+| [docs/02_requirements.md](docs/02_requirements.md) | 機能要件 (F1〜F10) / 非機能要件 / 用語定義 |
+| [docs/03_architecture.md](docs/03_architecture.md) | システム構成図・シーケンス図 (Mermaid)・レイヤ構造 |
+| [docs/04_er_diagram.md](docs/04_er_diagram.md) | ER図 (IndexedDB)・埋め込み型・インデックス方針 |
+| [docs/05_api_design.md](docs/05_api_design.md) | API定義書 (3エンドポイント・ストリーム仕様・エラー規約) |
+| [docs/adr/](docs/adr/) | ADR: ローカルファースト / 部分JSONストリーミング自作クライアント / 2モデル戦略 |
+
 ## 構成の要点
 
 - `src/lib/ai/schemas.ts` — AI入出力の Zod スキーマ原本 (SnapAnalysis / MatchPlan / ClosetItemAttrs)
