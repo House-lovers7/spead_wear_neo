@@ -15,6 +15,9 @@ const TABS = [
 export function TabNav() {
   const pathname = usePathname();
 
+  // デモゲートの入場画面ではアプリ内導線を出さない
+  if (pathname === "/login") return null;
+
   return (
     <nav
       aria-label="メインナビゲーション"

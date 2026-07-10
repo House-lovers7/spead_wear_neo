@@ -22,6 +22,9 @@ const serverSchema = z.object({
 
   // アプリの公開 URL (絶対 URL 生成に使う)
   APP_URL: z.string().url().default("http://localhost:3000"),
+
+  // デモゲート用の共有パスコード (任意 — 未設定ならゲート無効で全公開)
+  DEMO_PASSCODE: z.string().min(4).optional(),
 });
 
 export type ServerEnv = z.infer<typeof serverSchema>;

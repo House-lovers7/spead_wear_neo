@@ -41,6 +41,12 @@ pnpm dev
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
+## デモゲート (任意)
+
+`.env.local` (または Vercel の環境変数) に `DEMO_PASSCODE` を設定すると、
+全ページ・API が共有パスコード入力後のみ使えるプライベートデモになる
+([ADR-0005](docs/adr/0005-demo-passcode-gate.md))。未設定なら従来どおり全公開で動く。
+
 ## 実機 (iPhone/Android) でのカメラ確認
 
 `getUserMedia` は HTTPS 必須のため、実機カメラは Vercel preview 等の HTTPS 環境で確認する。

@@ -31,6 +31,12 @@ Transfer-Encoding: chunked
 
 クライアント側タイムアウト: 150s (`AbortSignal.timeout`)。サーバ `maxDuration`: analyze/match 120s, categorize 60s。
 
+### デモゲート (任意、[ADR-0005](adr/0005-demo-passcode-gate.md))
+
+`DEMO_PASSCODE` 設定時のみ、`src/proxy.ts` が全ページ・全 API を共有パスコード Cookie で保護する。
+Cookie 未所持のリクエストは、ページ → `/login` へ 307、API → `401 {"error":"demo passcode required"}`。
+未設定時 (ローカル開発の既定) はこの節は存在しないものとして扱ってよい。
+
 ---
 
 ## POST /api/analyze — スナップ分解
@@ -123,6 +129,22 @@ Transfer-Encoding: chunked
 ```
 
 クライアントは分類失敗時もデフォルト値補完で手動登録に退避する (登録フローを止めない)。
+
+---
+
+## POST /api/login — デモゲート入場 (AI 非使用)
+
+`DEMO_PASSCODE` との一致を確認し、httpOnly Cookie (`sw_demo_gate`, 30日) を発行する。
+唯一の非ストリーミングルート。
+
+| 条件 | レスポンス |
+|---|---|
+| 一致 | `200 {"ok":true}` + `Set-Cookie` |
+| 不一致 | `401 {"error":"passcode mismatch"}` |
+| ボディ不正 | `400 {"error":"invalid request body"}` |
+| ゲート無効 (`DEMO_PASSCODE` 未設定) | `404 {"error":"demo gate is disabled"}` |
+
+リクエスト: `{"passcode": "..."}` (1..100文字)。
 
 ---
 
