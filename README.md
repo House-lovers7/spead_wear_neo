@@ -41,11 +41,20 @@ pnpm dev
 pnpm lint && pnpm typecheck && pnpm test && pnpm build
 ```
 
-## デモゲート (任意)
+## デモゲート (必須)
 
-`.env.local` (または Vercel の環境変数) に `DEMO_PASSCODE` を設定すると、
-全ページ・API が共有パスコード入力後のみ使えるプライベートデモになる
-([ADR-0005](docs/adr/0005-demo-passcode-gate.md))。未設定なら従来どおり全公開で動く。
+`.env.local` (または Vercel の環境変数) に、パスワードマネージャーで生成した32文字以上の
+`DEMO_PASSCODE` を設定する。全ページ・API は共有パスコード入力後だけ利用できる
+([ADR-0005](docs/adr/0005-demo-passcode-gate.md))。未設定・弱い値は公開へフォールバックせず503になる。
+
+AI API はさらに、3 route/全Function instance共通のUpstash atomic quota、入力サイズ、
+出力トークン、AI待ち時間、再試行0回の上限を持つ。本番では
+`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`が欠落・不正、または共有storeが障害なら、
+body/AI処理前に503でfail-closedになる。設定・上限・TTLは
+[ADR-0006](docs/adr/0006-distributed-ai-quota.md)を参照する。
+
+Vercel Firewallの3 AI path制限と、AI Gateway/provider側spend quotaも別に設定する。
+`AI_PROVIDER_BUDGET_CONFIRMED=true`はrelease確認であり、provider hard budgetの証拠ではない。
 
 ## 実機 (iPhone/Android) でのカメラ確認
 
@@ -70,3 +79,17 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build
 - `src/lib/analysis-runner.ts` — 解析→照合のバックグラウンドパイプライン
 - `src/app/api/*` — streamText + Output.object のストリーミング3ルート (キー未設定時はモック)
 - `src/lib/db/local.ts` — Dexie 層 (snaps / closetItems、likedPoints 集計)
+
+<!-- BEGIN GENERATED ENGINEERING HANDBOOK -->
+## Engineering handbook
+
+- [Start here](./docs/engineering/README.md)
+- [Architecture / system diagram](./docs/engineering/02_architecture.md)
+- [API](./docs/engineering/04_api.md) / [Data model](./docs/engineering/05_data_model.md) / [Screens](./docs/engineering/06_screen_design.md)
+- Detected check: `npm run dev  # next dev`, `npm run start  # next start`, `npm run build  # next build`, `npm run typecheck  # tsc --noEmit`
+- Snapshot: API 4 / entity 0 / screen 5 / test files 13
+- Data sources: persistent schema未検出
+- Handoff gaps: 2 P0/P1 items — [details](./docs/engineering/00_one_pager.md#引継ぎ時の未解決ギャップ)
+
+> Generated from the current checkout. Existing ADR/schema/runbook remains authoritative; production state is not asserted.
+<!-- END GENERATED ENGINEERING HANDBOOK -->
